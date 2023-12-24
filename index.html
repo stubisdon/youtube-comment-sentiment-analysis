@@ -18,6 +18,12 @@
 <body>
     <div class="container center-screen">
         <h1>Paste a link to your YouTube video to analyze</h1>
+
+        <!-- Success and error messages -->
+        <div id="errorMessage" class="alert alert-danger" role="alert" style="display: none;"></div>
+        <div id="successMessage" class="alert alert-success" role="alert" style="display: none;"></div>
+       
+       <!-- URL fetching form -->
         <form id="videoForm">
             <div class="form-group">
                 <input type="text" class="form-control" id="videoUrl" placeholder="URL of your video">
@@ -27,24 +33,50 @@
     </div>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script>
-        document.getElementById('videoForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+    document.getElementById('videoForm').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-            const videoUrl = document.getElementById('videoUrl').value;
+        // Clear previous messages
+        const errorMessageElement = document.getElementById('errorMessage');
+        const successMessageElement = document.getElementById('successMessage');
+        errorMessageElement.style.display = 'none';
+        successMessageElement.style.display = 'none';
 
-            fetch('/analyze', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url: videoUrl }),
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        const videoUrl = document.getElementById('videoUrl').value;
+
+        fetch('/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: videoUrl }),
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            if (status !== 200) {
+                // Display server error message
+                const errorMessageElement = document.getElementById('errorMessage');
+                errorMessageElement.textContent = body.error;
+                errorMessageElement.style.display = 'block';
+            } else if (body.error) {
+                // Display error message
+                const errorMessageElement = document.getElementById('errorMessage');
+                errorMessageElement.textContent = body.error;
+                errorMessageElement.style.display = 'block';
+            } else {
+                // Display success message
+                const successMessageElement = document.getElementById('successMessage');
+                successMessageElement.textContent = 'Analysis completed successfully!';
+                successMessageElement.style.display = 'block';
+            }
+        })
+        .catch((error) => {
+            // Display error message
+            const errorMessageElement = document.getElementById('errorMessage');
+            errorMessageElement.textContent = 'An error occurred: ' + error.message;
+            errorMessageElement.style.display = 'block';
         });
+    });
     </script>
 </body>
 </html>
