@@ -4,7 +4,7 @@ This is a to-do list for building a YouTube sentiment analysis app.
 
 ## Frontend
 
-- [ ] Create form with input field for YouTube link
+- [x] Create form with input field for YouTube link
 - [ ] When form is submitted, send POST request to backend with YouTube link
 - [ ] When results are received, display percentage of positive and negative comments on webpage
 
