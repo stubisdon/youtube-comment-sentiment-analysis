@@ -2,8 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
-require('dotenv').config();
 const { google } = require('googleapis');
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+  }
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '.')));
