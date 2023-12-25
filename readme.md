@@ -20,3 +20,13 @@ This is a to-do list for building a YouTube sentiment analysis app.
 - [ ] For each comment, use sentiment analysis library to determine sentiment
 - [ ] Calculate percentage of positive and negative comments
 - [ ] Send results back to frontend
+
+## Free vs paid
+
+- [ ] Test the free version with 100 comments with 3-5 creators
+- [ ] Ask about a paid version
+
+
+- [ ] Add Sign Up / Log in functionality
+- [ ] For paid accounts, let analyze more than 100 comments
+- [ ] Credits based on the number of API requests allowed

@@ -3,14 +3,15 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
 const { google } = require('googleapis');
+const { spawn } = require('child_process');
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
-  }
+}
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '.')));
 
-app.post('/analyze', (req, res) => {
+app.post('/analyze', async (req, res) => {
     const videoUrl = req.body.url;
     
     let videoId;
@@ -28,8 +29,6 @@ app.post('/analyze', (req, res) => {
 
     console.log('the ID is: ' + videoId);
 
-    const { google } = require('googleapis');
-
     console.log('Loading Google API...');
 
     // Initialize the YouTube API client
@@ -41,24 +40,47 @@ app.post('/analyze', (req, res) => {
     console.log('Google API loaded. API Key is ' + process.env.YOUTUBE_API_KEY);
 
     // Fetch comments
-    youtube.commentThreads.list({
-        part: 'snippet',
-        videoId: videoId,
-        maxResults: 100, // Fetch up to 100 comments
-    }, (err, response) => {
-        if (err) {
-            console.error('The API returned an error: ' + err);
-            res.status(500).json({ error: 'The API returned an error: ' + err });
-            return;
+    let comments = [];
+    // let pageToken = null;
+    // do {
+        const response = await youtube.commentThreads.list({
+            part: 'snippet',
+            videoId: videoId,
+            maxResults: 100, // Fetch up to 100 comments
+            // pageToken: pageToken
+        });
+
+        comments = comments.concat(response.data.items.map(item => item.snippet.topLevelComment.snippet.textDisplay));
+        // pageToken = response.data.nextPageToken;
+
+        console.log('Fetched ' + comments.length + ' comments so far');
+    // } while (pageToken);
+
+    console.log('Comments fetched. the number of comments is: ' + comments.length);
+
+    // Analyze the comments
+    const python = spawn('python3', ['./sentiment_analysis.py']);
+    python.stdin.write(JSON.stringify(comments));
+    python.stdin.end();
+
+    let sentimentResults = '';
+
+    python.stdout.on('data', (data) => {
+        sentimentResults += data.toString();
+    });
+
+    python.on('close', (code) => {
+        if (code !== 0) {
+            return res.status(500).json({ error: 'Failed to analyze comments' });
         }
 
-        const comments = response.data.items.map(item => item.snippet.topLevelComment.snippet.textDisplay);
+        sentimentResults = JSON.parse(sentimentResults);
 
-        console.log('Comments fetched. the number of comments is: ' + comments.length);
+        const positiveComments = sentimentResults.filter(comment => comment.score > 0.05);
+        const negativeComments = sentimentResults.filter(comment => comment.score < -0.05);
+        const neutralComments = sentimentResults.filter(comment => comment.score >= -0.05 && comment.score <= 0.05);
 
-        // TODO: Analyze the comments...
-
-        res.json({ comments: comments });
+        res.json({ positive: positiveComments, negative: negativeComments, neutral: neutralComments });
     });
 
     console.log('Cycle of fetch comments complete...');

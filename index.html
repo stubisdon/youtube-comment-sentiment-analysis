@@ -13,6 +13,10 @@
             height: 100vh;
             text-align: center;
         }
+        #commentsList {
+        max-height: 500px; /* Adjust this value as needed */
+        overflow-y: auto;
+}
     </style>
 </head>
 <body>
@@ -29,10 +33,28 @@
                 <input type="text" class="form-control" id="videoUrl" placeholder="URL of your video">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
+            <div id="sentimentResults"></div>
         </form>
     </div>
+    <!-- Include jQuery before Bootstrap's JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script>
+    // Function to display comments
+    function displayComments(comments) {
+        // Sort comments by sentiment score
+        comments.sort((a, b) => b.score - a.score);
+
+        // Generate HTML for comments
+        const commentsListElement = document.getElementById('commentsList');
+        commentsListElement.innerHTML = comments.map(comment => `
+            <p>${comment.score}: ${comment.text}</p>
+        `).join('');
+    }
+
     document.getElementById('videoForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -53,6 +75,9 @@
         })
         .then(response => response.json().then(data => ({ status: response.status, body: data })))
         .then(({ status, body }) => {
+            
+            // console.log(body);
+
             if (status !== 200) {
                 // Display server error message
                 const errorMessageElement = document.getElementById('errorMessage');
@@ -68,6 +93,29 @@
                 const successMessageElement = document.getElementById('successMessage');
                 successMessageElement.textContent = 'Analysis completed successfully!';
                 successMessageElement.style.display = 'block';
+
+                // Display sentiment results
+                const sentimentResultsElement = document.getElementById('sentimentResults');
+                sentimentResultsElement.innerHTML = `
+                    <a href="#" id="positiveLink">Positive comments: ${body.positive.length}</a><br>
+                    <a href="#" id="negativeLink">Negative comments: ${body.negative.length}</a><br>
+                    <a href="#" id="neutralLink">Neutral comments: ${body.neutral.length}</a>
+                    <div id="commentsList"></div>
+                `;
+
+                // Add click event listeners
+                document.getElementById('positiveLink').addEventListener('click', function(event) {
+                    event.preventDefault();
+                    displayComments(body.positive);
+                });
+                document.getElementById('negativeLink').addEventListener('click', function(event) {
+                    event.preventDefault();
+                    displayComments(body.negative);
+                });
+                document.getElementById('neutralLink').addEventListener('click', function(event) {
+                    event.preventDefault();
+                    displayComments(body.neutral);
+                });
             }
         })
         .catch((error) => {
