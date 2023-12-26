@@ -16,115 +16,80 @@
         #commentsList {
         max-height: 500px; /* Adjust this value as needed */
         overflow-y: auto;
-}
+        }
+        /* Mobile styles (default) */
+        #percentageResults .col {
+            display: block;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Desktop styles */
+        @media (min-width: 768px) {
+            #percentageResults .col {
+                display: inline-block;
+                width: 33.33%;
+                padding: 0;
+                margin: 0;
+            }
+        }
+
+        /* Add margin to the bottom of the title */
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        /* Add margin to the bottom of the submit button */
+        #videoForm {
+            margin-bottom: 20px;
+        }
+
+        /* Add margin to the bottom of the percentage results */
+        #percentageResults {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container center-screen">
         <h1>Paste a link to your YouTube video to analyze 📺</h1>
-
-        <!-- Success and error messages -->
-        <div id="errorMessage" class="alert alert-danger" role="alert" style="display: none;"></div>
-        <div id="successMessage" class="alert alert-success" role="alert" style="display: none;"></div>
-       
+      
        <!-- URL fetching form -->
         <form id="videoForm">
             <div class="form-group">
                 <input type="text" class="form-control" id="videoUrl" placeholder="URL of your video">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
-            <div id="sentimentResults"></div>
         </form>
+
+        <!-- Success and error messages -->
+        <div id="errorMessage" class="alert alert-danger" role="alert" style="display: none;"></div>
+        <div id="successMessage" class="alert alert-success" role="alert" style="display: none;"></div>
+
+        <!-- Percentage results -->
+        <div id="percentageResults" class="row" style="display: none;">
+            <div class="col text-center">
+                <h5>Positive Comments</h5>
+                <p id="positivePercentage" class="display-4">0%</p>
+            </div>
+            <div class="col text-center">
+                <h5>Neutral Comments</h5>
+                <p id="neutralPercentage" class="display-4">0%</p>
+            </div>
+            <div class="col text-center">
+                <h5>Negative Comments</h5>
+                <p id="negativePercentage" class="display-4">0%</p>
+            </div>
+        </div>
+
+        <!-- Body of analysis -->
+        <div id="sentimentResults"></div>
+
     </div>
     <!-- Include jQuery before Bootstrap's JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
-
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <script>
-    // Function to display comments
-    function displayComments(comments) {
-        // Sort comments by sentiment score
-        comments.sort((a, b) => b.score - a.score);
-
-        // Generate HTML for comments
-        const commentsListElement = document.getElementById('commentsList');
-        commentsListElement.innerHTML = comments.map(comment => `
-            <p>${comment.score}: ${comment.text}</p>
-        `).join('');
-    }
-
-    document.getElementById('videoForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        // Clear previous messages
-        const errorMessageElement = document.getElementById('errorMessage');
-        const successMessageElement = document.getElementById('successMessage');
-        errorMessageElement.style.display = 'none';
-        successMessageElement.style.display = 'none';
-
-        const videoUrl = document.getElementById('videoUrl').value;
-
-        fetch('/analyze', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url: videoUrl }),
-        })
-        .then(response => response.json().then(data => ({ status: response.status, body: data })))
-        .then(({ status, body }) => {
-            
-            // console.log(body);
-
-            if (status !== 200) {
-                // Display server error message
-                const errorMessageElement = document.getElementById('errorMessage');
-                errorMessageElement.textContent = body.error;
-                errorMessageElement.style.display = 'block';
-            } else if (body.error) {
-                // Display error message
-                const errorMessageElement = document.getElementById('errorMessage');
-                errorMessageElement.textContent = body.error;
-                errorMessageElement.style.display = 'block';
-            } else {
-                // Display success message
-                const successMessageElement = document.getElementById('successMessage');
-                successMessageElement.textContent = 'Analysis completed successfully!';
-                successMessageElement.style.display = 'block';
-
-                // Display sentiment results
-                const sentimentResultsElement = document.getElementById('sentimentResults');
-                sentimentResultsElement.innerHTML = `
-                    <a href="#" id="positiveLink">Positive comments: ${body.positive.length}</a><br>
-                    <a href="#" id="negativeLink">Negative comments: ${body.negative.length}</a><br>
-                    <a href="#" id="neutralLink">Neutral comments: ${body.neutral.length}</a>
-                    <div id="commentsList"></div>
-                `;
-
-                // Add click event listeners
-                document.getElementById('positiveLink').addEventListener('click', function(event) {
-                    event.preventDefault();
-                    displayComments(body.positive);
-                });
-                document.getElementById('negativeLink').addEventListener('click', function(event) {
-                    event.preventDefault();
-                    displayComments(body.negative);
-                });
-                document.getElementById('neutralLink').addEventListener('click', function(event) {
-                    event.preventDefault();
-                    displayComments(body.neutral);
-                });
-            }
-        })
-        .catch((error) => {
-            // Display error message
-            const errorMessageElement = document.getElementById('errorMessage');
-            errorMessageElement.textContent = 'An error occurred: ' + error.message;
-            errorMessageElement.style.display = 'block';
-        });
-    });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>

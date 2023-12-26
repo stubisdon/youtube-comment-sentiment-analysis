@@ -4,14 +4,15 @@ This is a to-do list for building a YouTube sentiment analysis app.
 
 ## General
 
-- [ ] Change the commiter name from Keroko to Stubisdon
+- [x] Change the commiter name from Keroko to Stubisdon
 - [x] Fix the app crash on the Heroku side (app works well locally)
 
 ## Frontend
 
 - [x] Create form with input field for YouTube link
 - [x] When form is submitted, send POST request to backend with YouTube link
-- [?] When results are received, display percentage of positive and negative comments on webpage
+- [x] When results are received, display percentage of positive and negative comments on webpage
+- [ ] Add a preloader for big volumes of comments
 
 ## Backend
 
@@ -20,13 +21,15 @@ This is a to-do list for building a YouTube sentiment analysis app.
 - [x] For each comment, use sentiment analysis library to determine sentiment
 - [?] Calculate percentage of positive and negative comments
 - [x] Send results back to frontend
-- [ ] Fix Python on Heroku
+- [x] Fix Python on Heroku
+- [ ] Improve false neutrals in sentiment analysis
  
 ## Free vs paid
 
 - [ ] Test the free version with 100 comments with 3-5 creators
 - [ ] Ask about a paid version
 
+- [ ] Define how much money is spent on every 1000 fetched commments
 
 - [ ] Add Sign Up / Log in functionality
 - [ ] For paid accounts, let analyze more than 100 comments
