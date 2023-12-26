@@ -64,6 +64,10 @@ app.post('/analyze', async (req, res) => {
             sentimentResults += data.toString();
         });
 
+        python.stderr.on('data', (data) => {
+            console.error(`Python stderr: ${data}`);
+        });
+
         python.on('close', (code) => {
             if (code !== 0) {
                 return res.status(500).json({ error: 'Failed to analyze comments' });
