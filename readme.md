@@ -23,6 +23,8 @@ This is a to-do list for building a YouTube sentiment analysis app.
 - [x] Send results back to frontend
 - [x] Fix Python on Heroku
 - [ ] Improve false neutrals in sentiment analysis
+- [ ] If self-hosted models don't work - try API model
+- [ ] if successful - analyze sentiment around a person online
  
 ## Free vs paid
 
