@@ -2,3 +2,5 @@ nltk==3.6.2
 gunicorn
 textblob
 transformers
+torch==1.10.0
+tensorflow==2.7.0
