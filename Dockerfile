@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 
-CMD gunicorn -b :$PORT app:app
+CMD gunicorn -b :$PORT sentiment_analysis_roberta:app
