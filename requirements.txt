@@ -2,6 +2,6 @@
 gunicorn
 # textblob
 transformers==4.13.0
-# torch==1.9.0
+torch==1.9.0
 # tensorflow==2.7.0
 # protobuf==3.20.0
