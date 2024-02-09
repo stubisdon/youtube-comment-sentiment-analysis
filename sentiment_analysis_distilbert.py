@@ -4,7 +4,7 @@ import traceback
 from transformers import pipeline
 
 # Initialize the sentiment analysis pipeline
-sentiment_analysis = pipeline('sentiment-analysis', model="textattack/roberta-base-SST-2")
+sentiment_analysis = pipeline('sentiment-analysis', model="distilbert-base-uncased")
 
 def analyze_sentiment(comment):
     result = sentiment_analysis(comment)[0]
