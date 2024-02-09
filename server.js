@@ -54,7 +54,7 @@ app.post('/analyze', async (req, res) => {
         console.log('Comments fetched. the number of comments is: ' + comments.length);
 
         // Analyze the comments
-        const python = spawn('python3', ['./sentiment_analysis_roberta.py']);
+        const python = spawn('python3', ['./sentiment_analysis_distilbert.py']);
         python.stdin.write(JSON.stringify(comments));
         python.stdin.end();
 
